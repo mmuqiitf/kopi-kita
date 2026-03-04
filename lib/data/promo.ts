@@ -20,6 +20,17 @@ export const promoCampaignSchema = z.object({
 
 export type PromoCampaignInput = z.infer<typeof promoCampaignSchema>;
 
+function getCurrentWeekStartDate() {
+	const now = new Date();
+	const day = now.getDay();
+	const diffToMonday = (day + 6) % 7;
+
+	now.setDate(now.getDate() - diffToMonday);
+	now.setHours(0, 0, 0, 0);
+
+	return now.toISOString().split("T")[0];
+}
+
 export async function getCustomerTrends() {
 	const db = getDb();
 
@@ -83,12 +94,19 @@ export async function savePromoCampaign(
 	return created;
 }
 
-export async function listRecentPromos() {
+export async function listRecentPromos(options?: {
+	weekOnly?: boolean;
+	limit?: number;
+}) {
 	const db = getDb();
+	const weekOnly = options?.weekOnly ?? false;
+	const limit = options?.limit ?? 10;
+	const currentWeekStart = getCurrentWeekStartDate();
 
 	return db
 		.select()
 		.from(promoCampaigns)
+		.where(weekOnly ? eq(promoCampaigns.weekOf, currentWeekStart) : undefined)
 		.orderBy(desc(promoCampaigns.generatedAt))
-		.limit(10);
+		.limit(limit);
 }

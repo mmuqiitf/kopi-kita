@@ -10,7 +10,7 @@ export async function GET() {
 
 	try {
 		const trends = await getCustomerTrends();
-		const recentPromos = await listRecentPromos();
+		const recentPromos = await listRecentPromos({ weekOnly: true });
 
 		return NextResponse.json({
 			...trends,

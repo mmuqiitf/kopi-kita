@@ -37,6 +37,7 @@ export function DataTable<TData, TValue>({
 	data,
 	isLoading = false,
 }: DataTableProps<TData, TValue>) {
+	// eslint-disable-next-line react-hooks/incompatible-library
 	const table = useReactTable({
 		data,
 		columns,
@@ -121,7 +122,7 @@ export function DataTable<TData, TValue>({
 								table.setPageSize(Number(value));
 							}}
 						>
-							<SelectTrigger className="h-6 w-[70px]">
+							<SelectTrigger className="h-6 w-17.5">
 								<SelectValue
 									placeholder={table.getState().pagination.pageSize}
 								/>

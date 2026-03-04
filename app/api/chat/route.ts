@@ -1,7 +1,9 @@
 import { groq } from "@ai-sdk/groq";
 import { convertToModelMessages, streamText, UIMessage } from "ai";
+import { NextResponse } from "next/server";
 import { count, desc, eq } from "drizzle-orm";
 
+import { auth } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { customers, customerInterests, interestTags } from "@/lib/db/schema";
 import { buildChatSystemPrompt } from "@/lib/prompts/chat";
@@ -9,6 +11,11 @@ import { buildChatSystemPrompt } from "@/lib/prompts/chat";
 export const maxDuration = 30;
 
 export async function POST(request: Request) {
+	const session = await auth();
+	if (!session?.user) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+
 	const db = getDb();
 	const { messages }: { messages: UIMessage[] } = await request.json();
 	const modelMessages = await convertToModelMessages(messages);

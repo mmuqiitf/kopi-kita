@@ -70,7 +70,7 @@ export function CustomerFormModal({
 	};
 	return (
 		<Dialog open={isOpen} onOpenChange={isSaving ? undefined : onOpenChange}>
-			<DialogContent className="sm:max-w-[425px]">
+			<DialogContent className="sm:max-w-106.25">
 				<DialogHeader>
 					<DialogTitle>
 						{editingCustomerId ? "Edit Customer" : "Add Customer"}

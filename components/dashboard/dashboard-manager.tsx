@@ -37,7 +37,7 @@ export function DashboardManager() {
 
 	if (error) {
 		return (
-			<div className="flex items-center justify-center min-h-[400px]">
+			<div className="flex items-center justify-center min-h-100">
 				<p className="text-destructive">
 					Error loading dashboard: {(error as Error).message}
 				</p>
@@ -236,8 +236,8 @@ function DashboardSkeleton() {
 				<Skeleton className="h-32" />
 			</div>
 			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-				<Skeleton className="h-[400px] lg:col-span-4" />
-				<Skeleton className="h-[400px] lg:col-span-3" />
+				<Skeleton className="h-100 lg:col-span-4" />
+				<Skeleton className="h-100 lg:col-span-3" />
 			</div>
 		</div>
 	);

@@ -50,7 +50,7 @@ export default async function AppLayout({
 									<span className="sr-only">Toggle navigation menu</span>
 								</Button>
 							</SheetTrigger>
-							<SheetContent side="left" className="w-[300px] sm:w-[400px]">
+							<SheetContent side="left" className="w-75 sm:w-100">
 								<div className="sr-only">
 									<SheetTitle>Navigation Menu</SheetTitle>
 									<SheetDescription>

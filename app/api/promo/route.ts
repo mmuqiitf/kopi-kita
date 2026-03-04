@@ -9,7 +9,7 @@ export async function GET() {
 	}
 
 	try {
-		const promos = await listRecentPromos();
+		const promos = await listRecentPromos({ weekOnly: true });
 		return NextResponse.json({ promos });
 	} catch (error) {
 		console.error("Failed to fetch promos:", error);
