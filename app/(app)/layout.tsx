@@ -3,16 +3,9 @@ import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 
-import { Coffee, Menu } from "lucide-react";
+import { Menu, Coffee } from "lucide-react";
 import { LogoutButton } from "@/components/auth/logout-button";
-import { NavLink } from "@/components/layout/nav-link";
-
-const navItems = [
-	{ href: "/dashboard", label: "Dashboard", iconName: "Home" },
-	{ href: "/customers", label: "Customers", iconName: "Users" },
-	{ href: "/promo", label: "Promo Ideas", iconName: "Sparkles" },
-	{ href: "/chat", label: "AI Chat", iconName: "MessageSquare" },
-];
+import { SidebarNav } from "@/components/layout/sidebar-nav";
 
 import {
 	Sheet,
@@ -64,19 +57,7 @@ export default async function AppLayout({
 											Kopi Kita CRM
 										</div>
 									</div>
-									<nav className="grid gap-2 text-lg font-medium">
-										{navItems.map((item) => {
-											return (
-												<NavLink
-													key={item.href}
-													href={item.href}
-													label={item.label}
-													iconName={item.iconName}
-													mobile
-												/>
-											);
-										})}
-									</nav>
+									<SidebarNav mobile />
 								</div>
 							</SheetContent>
 						</Sheet>
@@ -101,18 +82,7 @@ export default async function AppLayout({
 			<div className="flex flex-1 w-full max-w-7xl mx-auto md:grid md:grid-cols-[240px_1fr]">
 				{/* Sidebar */}
 				<aside className="hidden md:flex flex-col border-r border-border py-4 pr-0">
-					<nav className="grid gap-0">
-						{navItems.map((item) => {
-							return (
-								<NavLink
-									key={item.href}
-									href={item.href}
-									label={item.label}
-									iconName={item.iconName}
-								/>
-							);
-						})}
-					</nav>
+					<SidebarNav />
 				</aside>
 
 				{/* Main Content Area */}

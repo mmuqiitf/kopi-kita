@@ -2,28 +2,21 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Users, Sparkles, MessageSquare, LucideIcon } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const ICON_MAP: Record<string, LucideIcon> = {
-	Home,
-	Users,
-	Sparkles,
-	MessageSquare,
-};
-
-interface NavLinkProps {
+export interface NavLinkProps {
 	href: string;
 	label: string;
-	iconName: string;
+	icon: LucideIcon;
 	mobile?: boolean;
 }
 
-export function NavLink({ href, label, iconName, mobile }: NavLinkProps) {
+export function NavLink({ href, label, icon, mobile }: NavLinkProps) {
 	const pathname = usePathname();
 	const isActive = pathname === href;
-	const Icon = ICON_MAP[iconName] || Home;
+	const Icon = icon;
 
 	if (mobile) {
 		return (
