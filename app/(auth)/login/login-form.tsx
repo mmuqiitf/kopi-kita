@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 
 export function LoginForm() {
-	const [error, setError] = useState<string | null>(null);
+	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 
 	const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -25,23 +27,27 @@ export function LoginForm() {
 		const email = String(formData.get("email") ?? "");
 		const password = String(formData.get("password") ?? "");
 
-		setError(null);
 		setIsLoading(true);
 
-		const result = await signIn("credentials", {
-			email,
-			password,
-			redirect: false,
-		});
+		try {
+			const result = await signIn("credentials", {
+				email,
+				password,
+				redirect: false,
+			});
 
-		setIsLoading(false);
-
-		if (result?.error) {
-			setError("Invalid email or password.");
-			return;
+			if (result?.error) {
+				toast.error("Invalid email or password.");
+			} else {
+				toast.success("Login successful! Welcome back.");
+				router.push("/dashboard");
+				router.refresh();
+			}
+		} catch {
+			toast.error("An unexpected error occurred during login.");
+		} finally {
+			setIsLoading(false);
 		}
-
-		window.location.href = "/dashboard";
 	};
 
 	return (
@@ -78,12 +84,6 @@ export function LoginForm() {
 									placeholder="••••••••"
 								/>
 							</Field>
-
-							{error ? (
-								<div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
-									{error}
-								</div>
-							) : null}
 
 							<Button type="submit" disabled={isLoading} className="w-full">
 								{isLoading ? "Signing in..." : "Sign in"}

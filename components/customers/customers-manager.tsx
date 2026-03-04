@@ -1,54 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { PlusIcon, SearchIcon, FilterIcon } from "lucide-react";
+import { useState } from "react";
+import { Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardAction,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
-import { CustomerTable } from "./customer-table";
 import { CustomerFormModal } from "./customer-form-modal";
-
-export type ContactType = "email" | "phone" | "whatsapp";
-
-export type CustomerItem = {
-	id: string;
-	name: string;
-	contact: string | null;
-	contactType: ContactType | null;
-	favoriteProduct: string;
-	createdAt: string;
-	tags: string[];
-};
-
-export type TagItem = {
-	id: number;
-	name: string;
-};
-
-export type FormState = {
-	name: string;
-	contact: string;
-	contactType: ContactType | "";
-	favoriteProduct: string;
-	tagsInput: string;
-};
+import { DataTable } from "@/components/ui/data-table";
+import { getColumns } from "./customer-table";
+import { ContactType, CustomerItem, FormState } from "./types";
+import {
+	useCustomersQuery,
+	useTagsQuery,
+	useSaveCustomerMutation,
+	useDeleteCustomerMutation,
+} from "./use-customers";
 
 const initialFormState: FormState = {
 	name: "",
@@ -58,256 +26,164 @@ const initialFormState: FormState = {
 	tagsInput: "",
 };
 
-function parseTags(input: string) {
-	return Array.from(
-		new Set(
-			input
-				.split(",")
-				.map((item) => item.trim())
-				.filter(Boolean),
-		),
-	);
-}
-
-export function CustomersManager() {
-	const [customers, setCustomers] = useState<CustomerItem[]>([]);
-	const [tags, setTags] = useState<TagItem[]>([]);
+export default function CustomersManager() {
 	const [search, setSearch] = useState("");
-	const [selectedTag, setSelectedTag] = useState("all");
-	const [formState, setFormState] = useState<FormState>(initialFormState);
+	const [activeFilter, setActiveFilter] = useState("all");
 	const [editingCustomerId, setEditingCustomerId] = useState<string | null>(
 		null,
 	);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [isFetching, setIsFetching] = useState(false);
-	const [isSaving, setIsSaving] = useState(false);
-	const [deletingId, setDeletingId] = useState<string | null>(null);
-	const [error, setError] = useState<string | null>(null);
+	const [formState, setFormState] = useState<FormState>(initialFormState);
 
-	const fetchCustomers = useCallback(async () => {
-		const params = new URLSearchParams();
-		if (search.trim()) params.set("search", search.trim());
-		if (selectedTag && selectedTag !== "all") params.set("tag", selectedTag);
+	// --- Custom Hooks ---
+	const { data: tags = [] } = useTagsQuery();
+	const { data: allCustomers = [], isFetching } = useCustomersQuery();
+	const deleteMutation = useDeleteCustomerMutation();
+	const saveMutation = useSaveCustomerMutation(editingCustomerId);
 
-		const response = await fetch(`/api/customers?${params.toString()}`, {
-			method: "GET",
-			cache: "no-store",
-		});
-
-		if (!response.ok) {
-			throw new Error("Failed to load customers");
-		}
-
-		const payload = await response.json();
-		setCustomers(payload.customers ?? []);
-	}, [search, selectedTag]);
-
-	const fetchTags = useCallback(async () => {
-		const response = await fetch("/api/interests", {
-			method: "GET",
-			cache: "no-store",
-		});
-
-		if (!response.ok) {
-			throw new Error("Failed to load interests");
-		}
-
-		const payload = await response.json();
-		setTags(payload.tags ?? []);
-	}, []);
-
-	const refreshAll = useCallback(async () => {
-		setIsFetching(true);
-		setError(null);
-		try {
-			await Promise.all([fetchCustomers(), fetchTags()]);
-		} catch {
-			setError("Unable to fetch customer data right now.");
-		} finally {
-			setIsFetching(false);
-		}
-	}, [fetchCustomers, fetchTags]);
-
-	useEffect(() => {
-		const timeout = setTimeout(() => {
-			void fetchCustomers().catch(() => {
-				setError("Unable to fetch customer data right now.");
-			});
-		}, 250);
-
-		return () => clearTimeout(timeout);
-	}, [fetchCustomers]);
-
-	useEffect(() => {
-		void fetchTags().catch(() => {
-			setError("Unable to load interests.");
-		});
-	}, [fetchTags]);
-
-	const totalCustomers = useMemo(() => customers.length, [customers]);
-
+	// --- Handlers ---
 	const resetForm = () => {
 		setFormState(initialFormState);
 		setEditingCustomerId(null);
-		setError(null);
-	};
-
-	const handleOpenModal = () => {
-		resetForm();
-		setIsModalOpen(true);
-	};
-
-	const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		setError(null);
-
-		const payload = {
-			name: formState.name,
-			contact: formState.contact || null,
-			contactType: formState.contactType || null,
-			favoriteProduct: formState.favoriteProduct,
-			tags: parseTags(formState.tagsInput),
-		};
-
-		const endpoint = "/api/customers";
-		const method = editingCustomerId ? "PATCH" : "POST";
-		const body = editingCustomerId
-			? { id: editingCustomerId, ...payload }
-			: payload;
-
-		setIsSaving(true);
-		try {
-			const response = await fetch(endpoint, {
-				method,
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(body),
-			});
-
-			if (!response.ok) {
-				throw new Error("Request failed");
-			}
-
-			resetForm();
-			setIsModalOpen(false);
-			await refreshAll();
-		} catch {
-			setError("Could not save customer. Please check your input.");
-		} finally {
-			setIsSaving(false);
-		}
 	};
 
 	const onEdit = (customer: CustomerItem) => {
 		setEditingCustomerId(customer.id);
 		setFormState({
 			name: customer.name,
-			contact: customer.contact ?? "",
-			contactType: customer.contactType ?? "",
-			favoriteProduct: customer.favoriteProduct,
+			contact: customer.contact || "",
+			contactType: customer.contactType || "",
+			favoriteProduct: customer.favoriteProduct || "",
 			tagsInput: customer.tags.join(", "),
 		});
-		setError(null);
 		setIsModalOpen(true);
 	};
 
-	const onDelete = async (id: string) => {
+	const onDelete = (id: string) => {
 		const shouldDelete = window.confirm("Delete this customer?");
-		if (!shouldDelete) {
-			return;
-		}
-
-		setDeletingId(id);
-		setError(null);
-
-		try {
-			const response = await fetch("/api/customers", {
-				method: "DELETE",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ id }),
-			});
-
-			if (!response.ok) {
-				throw new Error("Delete failed");
-			}
-
-			await refreshAll();
-		} catch {
-			setError("Could not delete customer.");
-		} finally {
-			setDeletingId(null);
+		if (shouldDelete) {
+			deleteMutation.mutate(id);
 		}
 	};
 
+	const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const t = formState.tagsInput
+			.split(",")
+			.map((x) => x.trim())
+			.filter(Boolean);
+
+		saveMutation.mutate(
+			{
+				name: formState.name,
+				contact: formState.contact,
+				contactType: (formState.contactType as ContactType) || null,
+				favoriteProduct: formState.favoriteProduct,
+				tags: t,
+			},
+			{
+				onSuccess: () => {
+					setIsModalOpen(false);
+					resetForm();
+				},
+			},
+		);
+	};
+
+	// --- Derived Data ---
+	const filteredCustomers = allCustomers.filter((c) => {
+		const matchesSearch =
+			c.name.toLowerCase().includes(search.toLowerCase()) ||
+			c.contact?.toLowerCase().includes(search.toLowerCase());
+		const matchesFilter =
+			activeFilter === "all" || c.tags.includes(activeFilter);
+		return matchesSearch && matchesFilter;
+	});
+
+	const columns = getColumns(
+		onEdit,
+		onDelete,
+		deleteMutation.variables || null,
+		isFetching || deleteMutation.isPending,
+	);
+
 	return (
-		<div className="flex flex-col gap-6">
-			<Card className="w-full">
-				<CardHeader>
-					<CardTitle>Customers ({totalCustomers})</CardTitle>
-					<CardDescription>
-						Manage, search, and filter your customer database.
-					</CardDescription>
-					<CardAction>
-						<Button onClick={handleOpenModal}>
-							<PlusIcon className="mr-2 h-4 w-4" /> Add Customer
-						</Button>
-					</CardAction>
+		<div className="space-y-6">
+			<Card>
+				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 flex-wrap gap-4">
+					<CardTitle className="text-xl font-bold">
+						Customers Directory
+					</CardTitle>
+					<Button
+						onClick={() => {
+							resetForm();
+							setIsModalOpen(true);
+						}}
+					>
+						Add Customer
+					</Button>
 				</CardHeader>
+
 				<CardContent>
-					<div className="flex flex-col sm:flex-row gap-4 mb-6">
+					<div className="flex flex-col md:flex-row gap-4 mb-6">
 						<div className="relative flex-1">
-							<SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+							<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
 							<Input
-								className="pl-9"
-								placeholder="Search by name or favorite product..."
+								placeholder="Search by name or contact..."
+								className="pl-8"
 								value={search}
-								onChange={(event) => setSearch(event.target.value)}
+								onChange={(e) => setSearch(e.target.value)}
 							/>
-						</div>
-						<div className="w-full sm:w-48 relative">
-							<div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-								<FilterIcon className="h-4 w-4 text-muted-foreground" />
-							</div>
-							<Select value={selectedTag} onValueChange={setSelectedTag}>
-								<SelectTrigger className="pl-9">
-									<SelectValue placeholder="All interests" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectGroup>
-										<SelectItem value="all">All interests</SelectItem>
-										{tags.map((tag) => (
-											<SelectItem key={tag.id} value={tag.name}>
-												{tag.name}
-											</SelectItem>
-										))}
-									</SelectGroup>
-								</SelectContent>
-							</Select>
 						</div>
 					</div>
 
-					<CustomerTable
-						customers={customers}
-						isFetching={isFetching}
-						deletingId={deletingId}
-						onEdit={onEdit}
-						onDelete={onDelete}
+					<div className="flex flex-wrap gap-2 mb-6">
+						<Button
+							type="button"
+							variant={activeFilter === "all" ? "default" : "secondary"}
+							size="sm"
+							onClick={() => setActiveFilter("all")}
+						>
+							All ({allCustomers.length})
+						</Button>
+						{tags.map((tag) => {
+							const count = allCustomers.filter((c) =>
+								c.tags.includes(tag),
+							).length;
+							return (
+								<Button
+									key={tag}
+									type="button"
+									variant={activeFilter === tag ? "default" : "secondary"}
+									size="sm"
+									onClick={() => setActiveFilter(tag)}
+								>
+									{tag} ({count})
+								</Button>
+							);
+						})}
+					</div>
+
+					<DataTable
+						columns={columns}
+						data={filteredCustomers}
+						isLoading={isFetching}
 					/>
 				</CardContent>
 			</Card>
 
 			<CustomerFormModal
 				isOpen={isModalOpen}
-				onOpenChange={setIsModalOpen}
+				onOpenChange={(val) => {
+					if (!val) resetForm();
+					setIsModalOpen(val);
+				}}
 				formState={formState}
 				setFormState={setFormState}
 				onSubmit={onSubmit}
-				isSaving={isSaving}
+				isSaving={saveMutation.isPending}
 				editingCustomerId={editingCustomerId}
-				error={error}
+				error={saveMutation.isError ? saveMutation.error.message : null}
 			/>
 		</div>
 	);

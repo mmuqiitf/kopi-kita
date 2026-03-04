@@ -1,4 +1,4 @@
-import { ContactType, FormState } from "./customers-manager";
+import { ContactType, FormState } from "./types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

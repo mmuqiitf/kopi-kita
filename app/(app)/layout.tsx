@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { auth, signOut } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 
 import {
 	Home,
@@ -10,9 +10,9 @@ import {
 	Sparkles,
 	MessageSquare,
 	Coffee,
-	LogOut,
 	Menu,
 } from "lucide-react";
+import { LogoutButton } from "@/components/auth/logout-button";
 
 const navItems = [
 	{ href: "/dashboard", label: "Dashboard", icon: Home },
@@ -82,21 +82,7 @@ export default async function AppLayout({
 							</p>
 							<p className="text-xs text-muted-foreground mt-1">Barista Role</p>
 						</div>
-						<form
-							action={async () => {
-								"use server";
-								await signOut({ redirectTo: "/login" });
-							}}
-						>
-							<Button
-								type="submit"
-								variant="ghost"
-								size="icon"
-								className="text-muted-foreground hover:text-foreground"
-							>
-								<LogOut className="h-5 w-5" />
-							</Button>
-						</form>
+						<LogoutButton />
 					</div>
 				</div>
 			</header>
