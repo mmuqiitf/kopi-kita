@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Search } from "lucide-react";
+import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,7 +24,7 @@ const initialFormState: FormState = {
 	contact: "",
 	contactType: "",
 	favoriteProduct: "",
-	tagsInput: "",
+	tags: [],
 };
 
 export default function CustomersManager() {
@@ -54,7 +55,7 @@ export default function CustomersManager() {
 			contact: customer.contact || "",
 			contactType: customer.contactType || "",
 			favoriteProduct: customer.favoriteProduct || "",
-			tagsInput: customer.tags.join(", "),
+			tags: customer.tags,
 		});
 		setIsModalOpen(true);
 	};
@@ -68,10 +69,32 @@ export default function CustomersManager() {
 
 	const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		const t = formState.tagsInput
-			.split(",")
-			.map((x) => x.trim())
-			.filter(Boolean);
+
+		// --- Validation ---
+		if (!formState.name.trim()) {
+			toast.error("Please enter a name.");
+			return;
+		}
+
+		if (formState.contactType === "email" && formState.contact) {
+			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			if (!emailRegex.test(formState.contact)) {
+				toast.error("Please enter a valid email address.");
+				return;
+			}
+		}
+
+		if (
+			(formState.contactType === "phone" ||
+				formState.contactType === "whatsapp") &&
+			formState.contact
+		) {
+			const phoneRegex = /^\+?[0-9]{10,15}$/;
+			if (!phoneRegex.test(formState.contact.replace(/\s/g, ""))) {
+				toast.error("Please enter a valid phone number.");
+				return;
+			}
+		}
 
 		saveMutation.mutate(
 			{
@@ -79,7 +102,7 @@ export default function CustomersManager() {
 				contact: formState.contact,
 				contactType: (formState.contactType as ContactType) || null,
 				favoriteProduct: formState.favoriteProduct,
-				tags: t,
+				tags: formState.tags,
 			},
 			{
 				onSuccess: () => {
@@ -115,6 +138,7 @@ export default function CustomersManager() {
 						Customers Directory
 					</CardTitle>
 					<Button
+						variant="outline"
 						onClick={() => {
 							resetForm();
 							setIsModalOpen(true);

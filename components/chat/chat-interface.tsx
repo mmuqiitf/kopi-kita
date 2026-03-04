@@ -8,6 +8,14 @@ import { useRef, useEffect, useState, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 const SUGGESTED_PROMPTS = [
 	"What's our most popular product?",
@@ -42,40 +50,35 @@ export function ChatInterface() {
 	};
 
 	return (
-		<div className="flex flex-col h-[calc(100vh-180px)] max-w-4xl mx-auto border rounded-xl overflow-hidden bg-background shadow-lg">
-			{/* Chat Header */}
-			<div className="bg-muted/30 border-b p-4 flex items-center justify-between">
+		<Card className="h-[calc(100vh-180px)] w-full">
+			<CardHeader className="border-b flex-row items-center justify-between gap-3">
 				<div className="flex items-center gap-3">
-					<div className="p-2 bg-amber-100 rounded-full dark:bg-amber-900/30">
-						<Coffee className="h-5 w-5 text-amber-600" />
+					<div className="h-8 w-8 rounded-full border bg-muted flex items-center justify-center">
+						<Coffee className="h-4 w-4 text-amber-600" />
 					</div>
-					<div>
-						<h3 className="font-semibold leading-none">
+					<div className="space-y-0.5">
+						<CardTitle className="text-xl font-bold">
 							Kopi Kita AI Assistant
-						</h3>
-						<p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-							<Badge
-								variant="outline"
-								className="h-4 px-1 py-0 text-[10px] font-normal border-green-500/50 text-green-600 bg-green-500/5"
-							>
+						</CardTitle>
+						<CardDescription className="flex items-center gap-2">
+							<Badge variant="outline" className="h-5 px-2 py-0 text-[10px]">
 								Online
 							</Badge>
 							Powered by store data
-						</p>
+						</CardDescription>
 					</div>
 				</div>
-				<Sparkles className="h-5 w-5 text-amber-400 opacity-50" />
-			</div>
+				<Sparkles className="h-4 w-4 text-muted-foreground" />
+			</CardHeader>
 
-			{/* Messages Area */}
-			<div className="flex-1 overflow-y-auto p-4 space-y-4">
+			<CardContent className="flex-1 overflow-y-auto py-4 space-y-4">
 				{messages.length === 0 && (
 					<div className="h-full flex flex-col items-center justify-center text-center p-8 space-y-4">
-						<div className="p-4 bg-amber-50 rounded-full dark:bg-amber-950/20">
+						<div className="p-4 bg-muted rounded-full">
 							<Sparkles className="h-8 w-8 text-amber-500" />
 						</div>
 						<div>
-							<h4 className="font-semibold text-lg">
+							<h4 className="font-semibold text-xl">
 								How can I help you today?
 							</h4>
 							<p className="text-sm text-muted-foreground max-w-xs mt-2">
@@ -85,13 +88,16 @@ export function ChatInterface() {
 						</div>
 						<div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4 text-left w-full max-w-md">
 							{SUGGESTED_PROMPTS.map((suggestion) => (
-								<button
+								<Button
 									key={suggestion}
+									type="button"
+									variant="secondary"
+									size="sm"
 									onClick={() => handleSuggestionClick(suggestion)}
-									className="text-xs p-3 rounded-lg border bg-muted/50 hover:bg-amber-50 dark:hover:bg-amber-900/10 hover:border-amber-200 transition-all text-left"
+									className="h-auto py-2.5 px-3 whitespace-normal justify-start text-left"
 								>
 									{suggestion}
-								</button>
+								</Button>
 							))}
 						</div>
 					</div>
@@ -108,7 +114,7 @@ export function ChatInterface() {
 						<div
 							className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-full border ${
 								message.role === "user"
-									? "bg-amber-500 border-amber-600 text-white"
+									? "bg-primary text-primary-foreground border-primary"
 									: "bg-muted border-border text-muted-foreground"
 							}`}
 						>
@@ -123,7 +129,7 @@ export function ChatInterface() {
 						<div
 							className={`max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
 								message.role === "user"
-									? "bg-amber-500 text-white rounded-tr-none"
+									? "bg-primary text-primary-foreground rounded-tr-none"
 									: "bg-muted text-foreground rounded-tl-none border"
 							}`}
 						>
@@ -151,36 +157,37 @@ export function ChatInterface() {
 				)}
 
 				<div ref={messagesEndRef} />
-			</div>
+			</CardContent>
 
-			{/* Input Area */}
-			<form onSubmit={handleSubmit} className="p-4 border-t bg-muted/20">
-				<div className="relative flex items-center max-w-3xl mx-auto group">
-					<Input
-						value={input}
-						onChange={(e) => setInput(e.target.value)}
-						placeholder="Ask Kopi Kita AI anything..."
-						disabled={isLoading}
-						className="pr-12 py-6 rounded-xl border-input/50 focus-visible:ring-amber-500/30 group-hover:border-amber-400/50 transition-colors disabled:opacity-60"
-					/>
-					<Button
-						type="submit"
-						size="icon"
-						disabled={isLoading || !input.trim()}
-						className="absolute right-1.5 h-9 w-9 rounded-lg transition-all bg-amber-500 hover:bg-amber-600 shadow-md disabled:opacity-50"
-					>
-						{isLoading ? (
-							<Loader2 className="h-4 w-4 animate-spin" />
-						) : (
-							<Send className="h-4 w-4" />
-						)}
-					</Button>
-				</div>
-				<p className="text-[10px] text-center text-muted-foreground mt-2">
-					AI may provide inaccurate info. Always verify customer-specific data
-					manually.
-				</p>
-			</form>
-		</div>
+			<CardFooter className="bg-muted/20">
+				<form onSubmit={handleSubmit} className="w-full">
+					<div className="relative flex items-center w-full">
+						<Input
+							value={input}
+							onChange={(e) => setInput(e.target.value)}
+							placeholder="Ask Kopi Kita AI anything..."
+							disabled={isLoading}
+							className="pr-12"
+						/>
+						<Button
+							type="submit"
+							size="icon"
+							disabled={isLoading || !input.trim()}
+							className="absolute right-1 h-8 w-8"
+						>
+							{isLoading ? (
+								<Loader2 className="h-4 w-4 animate-spin" />
+							) : (
+								<Send className="h-4 w-4" />
+							)}
+						</Button>
+					</div>
+					<p className="text-[10px] text-center text-muted-foreground mt-2">
+						AI may provide inaccurate info. Always verify customer-specific data
+						manually.
+					</p>
+				</form>
+			</CardFooter>
+		</Card>
 	);
 }

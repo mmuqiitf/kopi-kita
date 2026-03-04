@@ -1,6 +1,7 @@
 import { ContactType, FormState } from "./types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
 	Dialog,
 	DialogContent,
@@ -17,7 +18,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
+import { useState } from "react";
 
 interface CustomerFormModalProps {
 	isOpen: boolean;
@@ -40,6 +42,32 @@ export function CustomerFormModal({
 	editingCustomerId,
 	error,
 }: CustomerFormModalProps) {
+	const [tagInput, setTagInput] = useState("");
+
+	const addTag = (tag: string) => {
+		const trimmedTag = tag.trim();
+		if (trimmedTag && !formState.tags.includes(trimmedTag)) {
+			setFormState((prev) => ({
+				...prev,
+				tags: [...prev.tags, trimmedTag],
+			}));
+		}
+		setTagInput("");
+	};
+
+	const removeTag = (tagToRemove: string) => {
+		setFormState((prev) => ({
+			...prev,
+			tags: prev.tags.filter((t) => t !== tagToRemove),
+		}));
+	};
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter") {
+			e.preventDefault();
+			addTag(tagInput);
+		}
+	};
 	return (
 		<Dialog open={isOpen} onOpenChange={isSaving ? undefined : onOpenChange}>
 			<DialogContent className="sm:max-w-[425px]">
@@ -134,18 +162,32 @@ export function CustomerFormModal({
 
 						<Field>
 							<FieldLabel htmlFor="tags">
-								Interest tags (comma separated)
+								Interest tags (press Enter to add)
 							</FieldLabel>
+							<div className="flex flex-wrap gap-1.5 mb-2">
+								{formState.tags.map((tag) => (
+									<Badge
+										key={tag}
+										variant="secondary"
+										className="pl-2 gap-1 group transition-colors hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20"
+									>
+										{tag}
+										<button
+											type="button"
+											onClick={() => removeTag(tag)}
+											className="rounded-full bg-muted/50 p-0.5"
+										>
+											<X className="h-2.5 w-2.5" />
+										</button>
+									</Badge>
+								))}
+							</div>
 							<Input
 								id="tags"
-								placeholder="sweet drinks, caramel, oat milk"
-								value={formState.tagsInput}
-								onChange={(event) =>
-									setFormState((prev) => ({
-										...prev,
-										tagsInput: event.target.value,
-									}))
-								}
+								placeholder="Add tag..."
+								value={tagInput}
+								onChange={(e) => setTagInput(e.target.value)}
+								onKeyDown={handleKeyDown}
 								disabled={isSaving}
 							/>
 						</Field>

@@ -16,5 +16,5 @@ export interface FormState {
 	contact: string;
 	contactType: ContactType | "";
 	favoriteProduct: string;
-	tagsInput: string;
+	tags: string[];
 }

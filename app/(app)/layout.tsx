@@ -1,27 +1,26 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 
-import {
-	Home,
-	Users,
-	Sparkles,
-	MessageSquare,
-	Coffee,
-	Menu,
-} from "lucide-react";
+import { Coffee, Menu } from "lucide-react";
 import { LogoutButton } from "@/components/auth/logout-button";
+import { NavLink } from "@/components/layout/nav-link";
 
 const navItems = [
-	{ href: "/dashboard", label: "Dashboard", icon: Home },
-	{ href: "/customers", label: "Customers", icon: Users },
-	{ href: "/promo", label: "Promo Ideas", icon: Sparkles },
-	{ href: "/chat", label: "AI Chat", icon: MessageSquare },
+	{ href: "/dashboard", label: "Dashboard", iconName: "Home" },
+	{ href: "/customers", label: "Customers", iconName: "Users" },
+	{ href: "/promo", label: "Promo Ideas", iconName: "Sparkles" },
+	{ href: "/chat", label: "AI Chat", iconName: "MessageSquare" },
 ];
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+	Sheet,
+	SheetContent,
+	SheetTrigger,
+	SheetTitle,
+	SheetDescription,
+} from "@/components/ui/sheet";
 
 export default async function AppLayout({
 	children,
@@ -52,21 +51,33 @@ export default async function AppLayout({
 								</Button>
 							</SheetTrigger>
 							<SheetContent side="left" className="w-[300px] sm:w-[400px]">
-								<nav className="grid gap-2 text-lg font-medium mt-6">
-									{navItems.map((item) => {
-										const Icon = item.icon;
-										return (
-											<Link
-												key={item.href}
-												href={item.href}
-												className="flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-											>
-												<Icon className="h-5 w-5" />
-												{item.label}
-											</Link>
-										);
-									})}
-								</nav>
+								<div className="sr-only">
+									<SheetTitle>Navigation Menu</SheetTitle>
+									<SheetDescription>
+										Access different sections of the Kopi Kita CRM.
+									</SheetDescription>
+								</div>
+								<div className="flex flex-col gap-6 mt-8">
+									<div className="px-3">
+										<div className="flex items-center gap-2 font-bold text-xl text-amber-900 border-b pb-4 mb-4">
+											<Coffee className="h-6 w-6 text-amber-600" />
+											Kopi Kita CRM
+										</div>
+									</div>
+									<nav className="grid gap-2 text-lg font-medium">
+										{navItems.map((item) => {
+											return (
+												<NavLink
+													key={item.href}
+													href={item.href}
+													label={item.label}
+													iconName={item.iconName}
+													mobile
+												/>
+											);
+										})}
+									</nav>
+								</div>
 							</SheetContent>
 						</Sheet>
 						<div className="flex items-center gap-2 font-semibold">
@@ -89,22 +100,16 @@ export default async function AppLayout({
 
 			<div className="flex flex-1 w-full max-w-7xl mx-auto md:grid md:grid-cols-[240px_1fr]">
 				{/* Sidebar */}
-				<aside className="hidden md:flex flex-col border-r border-border py-6 pr-6">
-					<nav className="grid gap-1">
+				<aside className="hidden md:flex flex-col border-r border-border py-4 pr-0">
+					<nav className="grid gap-0">
 						{navItems.map((item) => {
-							const Icon = item.icon;
 							return (
-								<Button
+								<NavLink
 									key={item.href}
-									asChild
-									variant="ghost"
-									className="justify-start gap-3 h-10 px-4 font-medium"
-								>
-									<Link href={item.href}>
-										<Icon className="h-4 w-4" />
-										{item.label}
-									</Link>
-								</Button>
+									href={item.href}
+									label={item.label}
+									iconName={item.iconName}
+								/>
 							);
 						})}
 					</nav>

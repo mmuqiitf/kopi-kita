@@ -28,19 +28,19 @@ export default function PromoManager() {
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-				<div>
-					<h2 className="text-2xl font-bold tracking-tight">
-						Promo Generation Central
-					</h2>
-					<p className="text-muted-foreground mt-1 text-sm max-w-2xl">
-						Your AI-powered marketing assistant. We analyze current customer
-						trends to build high-converting global campaigns.
+				<div className="flex flex-col gap-2">
+					<h1 className="text-3xl font-bold tracking-tight">
+						Promo Generation
+					</h1>
+					<p className="text-muted-foreground max-w-2xl">
+						AI-powered marketing assistant analyzing current customer trends.
 					</p>
 				</div>
 				<Button
+					variant="outline"
 					onClick={() => generateMutation.mutate()}
 					disabled={generateMutation.isPending}
-					className="shrink-0 group"
+					className="shrink-0 group shadow-lg shadow-amber-500/10"
 				>
 					{generateMutation.isPending ? (
 						<>
@@ -91,64 +91,67 @@ export default function PromoManager() {
 					promos.map((promo: PromoCampaign) => (
 						<Card
 							key={promo.id}
-							className="flex flex-col rounded-none group hover:border-amber-500/50 transition-colors duration-300"
+							className="flex flex-col group hover:ring-amber-500/50 transition-all duration-300"
 						>
-							<CardHeader className="pb-3 border-b border-border/40 relative overflow-hidden bg-muted/10">
-								<div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-amber-500 via-orange-400 to-amber-200 opacity-20 group-hover:opacity-100 transition-opacity" />
+							<CardHeader className="relative overflow-hidden border-b pb-4">
+								<div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-amber-600 via-amber-400 to-amber-200 opacity-30 group-hover:opacity-100 transition-opacity" />
 
-								<div className="flex justify-between items-start mb-3 mt-1">
+								<div className="flex justify-between items-start pt-2">
 									<Badge
-										variant="outline"
-										className="font-medium bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900"
+										variant="secondary"
+										className="bg-amber-100 text-amber-900 border-amber-200 group-hover:bg-amber-200"
 									>
 										{promo.targetCount} targets
 									</Badge>
-									<span className="text-xs font-mono text-muted-foreground flex items-center bg-background px-2 py-0.5 rounded-full border">
-										<Calendar className="mr-1.5 h-3 w-3 text-amber-600" />
-										Week of {promo.weekOf}
+									<span className="text-[10px] font-mono text-muted-foreground flex items-center bg-muted/50 px-2 py-0.5 border">
+										<Calendar className="mr-1 h-3 w-3 text-amber-600" />
+										{promo.weekOf}
 									</span>
 								</div>
-								<CardTitle className="text-xl line-clamp-2 leading-tight">
+								<CardTitle className="text-lg font-bold mt-4 leading-tight">
 									{promo.theme}
 								</CardTitle>
-								<CardDescription className="line-clamp-2 min-h-10 mt-2 text-xs">
+								<CardDescription className="line-clamp-2 text-xs mt-1">
 									{promo.segmentDescription}
 								</CardDescription>
 							</CardHeader>
-							<CardContent className="flex-1 pt-5 pb-4">
-								<div className="space-y-5">
-									<div>
-										<p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 mb-2">
-											Why Now?
+							<CardContent className="flex-1 py-5">
+								<div className="space-y-6">
+									<div className="space-y-2">
+										<p className="text-[10px] font-bold uppercase tracking-widest text-amber-700/70">
+											Campaign Insight
 										</p>
-										<p className="text-sm border-l-2 border-amber-500/50 pl-3 italic text-foreground/80 leading-relaxed">
+										<p className="text-xs border-l-2 border-amber-500 pl-3 italic text-foreground leading-relaxed">
 											&quot;{promo.whyNow}&quot;
 										</p>
 									</div>
-									<div className="grid grid-cols-1 gap-2 border-t pt-4">
-										{promo.bestTimeWindow && (
-											<div className="flex justify-between items-center bg-muted/40 px-3 py-2 rounded-md">
-												<p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-													Best Time
-												</p>
-												<p className="text-xs font-medium">
-													{promo.bestTimeWindow}
-												</p>
-											</div>
-										)}
-									</div>
-									<div className="bg-amber-50/50 dark:bg-amber-950/10 p-4 rounded-lg relative text-sm border border-amber-100 dark:border-amber-900/50 font-medium">
+
+									{promo.bestTimeWindow && (
+										<div className="flex justify-between items-center bg-amber-50/50 dark:bg-amber-950/20 px-3 py-2 border border-amber-100/50">
+											<p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+												Best Time
+											</p>
+											<p className="text-xs font-semibold text-amber-900">
+												{promo.bestTimeWindow}
+											</p>
+										</div>
+									)}
+
+									<div className="bg-muted/30 p-4 border relative text-xs leading-relaxed font-medium">
 										{promo.message}
+										<div className="absolute -top-2 -left-2 bg-background border p-1 scale-75">
+											<Sparkles className="h-3 w-3 text-amber-500" />
+										</div>
 									</div>
 								</div>
 							</CardContent>
-							<CardFooter className="pt-2 pb-4 px-6 border-t border-border/40 bg-muted/5">
+							<CardFooter className="pt-0 pb-4">
 								<Button
 									variant="secondary"
-									className="w-full transition-all group-hover:bg-amber-100 dark:group-hover:bg-amber-900/40 hover:text-amber-900 dark:hover:text-amber-100"
+									className="w-full h-9 hover:bg-amber-100 hover:text-amber-900 transition-colors border shadow-sm"
 									onClick={() => copyToClipboard(promo.message)}
 								>
-									<Copy className="mr-2 h-4 w-4 text-amber-600 dark:text-amber-500" />
+									<Copy className="mr-2 h-4 w-4 text-amber-600" />
 									Copy Message
 								</Button>
 							</CardFooter>
