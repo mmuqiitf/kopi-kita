@@ -15,6 +15,7 @@
 	},
 	"dependencies": {
 		"@ai-sdk/groq": "^3.0.27",
+		"@ai-sdk/react": "^3.0.113",
 		"@base-ui/react": "^1.2.0",
 		"@hookform/resolvers": "^5.2.2",
 		"@supabase/supabase-js": "^2.98.0",

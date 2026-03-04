@@ -16,65 +16,65 @@ Build a full-stack Next.js app for Mimi’s Coffee Shop to manage customers, tra
 
 ## Delivery Milestones
 
-### Milestone 1 — Foundation (Start Here)
+### Milestone 1 — Foundation [DONE]
 
-1. Install dependencies for DB, auth, AI, forms, and charts.
-2. Add environment template (`.env.example`).
-3. Set up Drizzle config and database client.
-4. Define database schema:
-   - `users`
-   - `customers`
-   - `interest_tags`
-   - `customer_interests`
-   - `promo_campaigns`
-5. Add seed script and starter seed data.
-6. Configure NextAuth credentials login and route handler.
-7. Add protected app route groups:
-   - `(auth)/login`
-   - `(app)/dashboard`
-   - `(app)/customers`
-   - `(app)/promo`
-   - `(app)/chat`
+1. [x] Install dependencies for DB, auth, AI, forms, and charts.
+2. [x] Add environment template (`.env.example`).
+3. [x] Set up Drizzle config and database client.
+4. [x] Define database schema:
+   - [x] `users`
+   - [x] `customers`
+   - [x] `interest_tags`
+   - [x] `customer_interests`
+   - [x] `promo_campaigns`
+5. [x] Add seed script and starter seed data.
+6. [x] Configure NextAuth credentials login and route handler.
+7. [x] Add protected app route groups:
+   - [x] `(auth)/login`
+   - [x] `(app)/dashboard`
+   - [x] `(app)/customers`
+   - [x] `(app)/promo`
+   - [x] `(app)/chat`
 
-### Milestone 2 — Customer CRM
+### Milestone 2 — Customer CRM [DONE]
 
-1. Build customer list page with:
-   - Search by name
-   - Interest filters
-   - Table list
-2. Implement customer CRUD:
-   - Add customer
-   - Edit customer
-   - Delete customer
-3. Manage interest tags (existing + create-on-input).
-4. Add validation and UX feedback (toasts/errors).
+1. [x] Build customer list page with:
+   - [x] Search by name
+   - [x] Interest filters
+   - [x] Table list
+2. [x] Implement customer CRUD:
+   - [x] Add customer
+   - [x] Edit customer
+   - [x] Delete customer
+3. [x] Manage interest tags (existing + create-on-input).
+4. [x] Add validation and UX feedback (toasts/errors).
 
-### Milestone 3 — AI Promo Ideas (Core Feature)
+### Milestone 3 — AI Promo Ideas (Core Feature) [DONE]
 
-1. Build Promo Ideas page UI.
-2. Aggregate customer interests/trends from DB.
-3. Create prompt templates in `lib/prompts/promo.ts`.
-4. Implement API route to generate **2–3 campaign ideas** with:
-   - Theme
-   - Segment + count
-   - Why now
-   - Ready message + CTA
-   - Optional time window
-5. Add save-to-database for generated campaigns.
+1. [x] Build Promo Ideas page UI.
+2. [x] Aggregate customer interests/trends from DB.
+3. [x] Create prompt templates in `lib/prompts/promo.ts`.
+4. [x] Implement API route to generate **2–3 campaign ideas** with:
+   - [x] Theme
+   - [x] Segment + count
+   - [x] Why now
+   - [x] Ready message + CTA
+   - [x] Optional time window
+5. [x] Add save-to-database for generated campaigns.
 
-### Milestone 4 — Dashboard
+### Milestone 4 — Dashboard [DONE]
 
-1. Show total customers.
-2. Show top interests with counts.
-3. Display this week’s saved campaigns.
-4. Add copy-message quick action.
+1. [x] Show total customers.
+2. [x] Show top interests with counts.
+3. [x] Display this week’s saved campaigns.
+4. [x] Add copy-message quick action.
 
-### Milestone 5 — AI Chatbot
+### Milestone 5 — AI Chatbot [DONE]
 
-1. Build chat UI page.
-2. Implement streaming chat endpoint using Groq.
-3. Connect chatbot context to customer/promo data.
-4. Ensure chatbot can answer with current data trends.
+1. [x] Build chat UI page.
+2. [x] Implement streaming chat endpoint using Groq.
+3. [x] Connect chatbot context to customer/promo data.
+4. [x] Ensure chatbot can answer with current data trends.
 
 ### Milestone 6 — Hardening & Deploy
 

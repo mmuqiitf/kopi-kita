@@ -3,17 +3,20 @@ export function buildPromoPrompt(input: {
 	topTags: Array<{ tag: string; count: number }>;
 	topProducts: Array<{ product: string; count: number }>;
 }) {
+	const currentWeekStr = new Date().toISOString().split("T")[0];
+
 	return [
 		"You are a marketing assistant for Mimi's Coffee Shop (Kopi Kita).",
 		"Use the aggregate data to suggest exactly 3 global campaign ideas for this week.",
 		"Return concise and practical output.",
-		"Each campaign should include:",
-		"- theme",
-		"- segmentDescription",
-		"- whyNow",
-		"- message (1-2 friendly sentences + CTA)",
-		"- bestTimeWindow (optional)",
-		"- targetCount",
+		"Each campaign MUST include:",
+		"- theme (string)",
+		"- segmentDescription (string)",
+		"- whyNow (string, why this is relevant based on current data)",
+		"- message (1-2 friendly sentences + clear CTA, suitable for WhatsApp/IG)",
+		"- bestTimeWindow (string or null, e.g., 'Weekday Mornings' or null if not specific)",
+		"- targetCount (integer)",
+		`- weekOf (string, use YYYY-MM-DD for the start of the current week: ${currentWeekStr})`,
 		"",
 		`Total customers: ${input.totalCustomers}`,
 		`Top tags: ${JSON.stringify(input.topTags)}`,
